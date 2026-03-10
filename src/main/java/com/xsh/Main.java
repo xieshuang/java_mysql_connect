@@ -1,5 +1,6 @@
 package com.xsh;
 
+import com.xsh.util.IconGenerator;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,6 +14,9 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/view/MainView.fxml"));
         
         primaryStage.setTitle("MySQL Client");
+        
+        primaryStage.getIcons().add(IconGenerator.createFxImage());
+        
         primaryStage.setScene(new Scene(root, 1200, 800));
         primaryStage.setMinWidth(900);
         primaryStage.setMinHeight(600);
