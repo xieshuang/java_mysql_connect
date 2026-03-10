@@ -1,9 +1,9 @@
-package com.mysqlclient.controller;
+package com.xsh.controller;
 
-import com.mysqlclient.db.DatabaseManager;
-import com.mysqlclient.db.QueryExecutor;
-import com.mysqlclient.model.ConnectionInfo;
-import com.mysqlclient.model.QueryResult;
+import com.xsh.db.DatabaseManager;
+import com.xsh.db.QueryExecutor;
+import com.xsh.model.ConnectionInfo;
+import com.xsh.model.QueryResult;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;

@@ -1,4 +1,4 @@
-package com.mysqlclient.model;
+package com.xsh.model;
 
 import java.util.Objects;
 

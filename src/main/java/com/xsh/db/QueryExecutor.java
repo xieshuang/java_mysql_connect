@@ -1,7 +1,7 @@
-package com.mysqlclient.db;
+package com.xsh.db;
 
-import com.mysqlclient.model.ConnectionInfo;
-import com.mysqlclient.model.QueryResult;
+import com.xsh.model.ConnectionInfo;
+import com.xsh.model.QueryResult;
 
 import java.sql.*;
 import java.util.ArrayList;

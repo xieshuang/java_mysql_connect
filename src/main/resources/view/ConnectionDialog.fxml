@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.mysqlclient.controller.ConnectionController"
+      fx:controller="com.xsh.controller.ConnectionController"
       spacing="15" prefWidth="450" prefHeight="400"
       styleClass="dialog">
 

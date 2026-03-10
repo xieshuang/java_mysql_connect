@@ -1,7 +1,7 @@
-package com.mysqlclient.controller;
+package com.xsh.controller;
 
-import com.mysqlclient.db.DatabaseManager;
-import com.mysqlclient.model.ConnectionInfo;
+import com.xsh.db.DatabaseManager;
+import com.xsh.model.ConnectionInfo;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;

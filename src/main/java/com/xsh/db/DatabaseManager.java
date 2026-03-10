@@ -1,6 +1,6 @@
-package com.mysqlclient.db;
+package com.xsh.db;
 
-import com.mysqlclient.model.ConnectionInfo;
+import com.xsh.model.ConnectionInfo;
 
 import java.sql.*;
 import java.util.ArrayList;
