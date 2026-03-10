@@ -6,7 +6,7 @@
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.xsh.controller.ConnectionController"
-      spacing="15" prefWidth="450" prefHeight="400"
+      spacing="12" prefWidth="500" prefHeight="480"
       styleClass="dialog">
 
     <padding>
@@ -14,6 +14,13 @@
     </padding>
 
     <Label text="数据库连接" styleClass="dialog-title"/>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="已保存连接:"/>
+        <ComboBox fx:id="savedConnections" onAction="#onSavedConnectionSelected" 
+                  prefWidth="280"/>
+        <Button text="删除" onAction="#deleteSavedConnection" styleClass="danger-button"/>
+    </HBox>
 
     <GridPane hgap="10" vgap="10">
         <Label text="连接名称:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
@@ -36,6 +43,10 @@
         <TextField fx:id="databaseField" GridPane.columnIndex="1" GridPane.rowIndex="5"
                    promptText="可选"/>
     </GridPane>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <CheckBox fx:id="saveConnectionCheckBox" text="保存此连接"/>
+    </HBox>
 
     <HBox spacing="10" alignment="CENTER_LEFT">
         <Button text="测试连接" onAction="#testConnection" styleClass="primary-button"/>

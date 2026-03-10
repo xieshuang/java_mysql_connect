@@ -14,8 +14,7 @@
             <MenuBar>
                 <Menu text="文件">
                     <MenuItem text="新建连接" onAction="#showConnectionDialog" accelerator="Ctrl+N"/>
-                    <MenuItem text="保存连接" onAction="#saveConnection" accelerator="Ctrl+S"/>
-                    <MenuItem text="导出结果" onAction="#exportResult" accelerator="Ctrl+E"/>
+                    <MenuItem text="导出CSV" onAction="#exportResult" accelerator="Ctrl+E"/>
                     <SeparatorMenuItem/>
                     <MenuItem text="退出" onAction="#exitApp" accelerator="Ctrl+Q"/>
                 </Menu>
@@ -24,6 +23,7 @@
                     <MenuItem text="格式化SQL" onAction="#formatSql"/>
                     <SeparatorMenuItem/>
                     <MenuItem text="清空结果" onAction="#clearResult"/>
+                    <MenuItem text="清空历史" onAction="#clearSqlHistory"/>
                 </Menu>
                 <Menu text="帮助">
                     <MenuItem text="关于" onAction="#showAbout"/>
@@ -57,36 +57,55 @@
     </left>
 
     <center>
-        <VBox spacing="5">
-            <padding>
-                <Insets top="5" left="10" right="10" bottom="5"/>
-            </padding>
+        <SplitPane orientation="VERTICAL" dividerPositions="0.6">
+            <VBox spacing="5">
+                <padding>
+                    <Insets top="5" left="10" right="10" bottom="5"/>
+                </padding>
+                
+                <Label text="SQL编辑器" styleClass="section-header"/>
+                <TextArea fx:id="sqlEditor" 
+                          promptText="在此输入SQL语句..."
+                          styleClass="sql-editor"
+                          prefHeight="120"
+                          wrapText="true"/>
+                
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button text="执行 (Ctrl+Enter)" onAction="#executeQuery" styleClass="success-button"/>
+                    <Button text="清空" onAction="#clearEditor"/>
+                </HBox>
+                
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="执行结果" styleClass="section-header"/>
+                    <Label fx:id="resultInfo" text="" styleClass="result-info"/>
+                </HBox>
+                
+                <TableView fx:id="resultTable" VBox.vgrow="ALWAYS" styleClass="result-table">
+                    <contextMenu>
+                        <ContextMenu>
+                            <MenuItem text="复制选中行" onAction="#copySelectedRow"/>
+                            <MenuItem text="导出选中行" onAction="#exportSelectedRow"/>
+                        </ContextMenu>
+                    </contextMenu>
+                </TableView>
+                
+                <TextArea fx:id="messageArea" 
+                          editable="false" 
+                          styleClass="message-area" 
+                          prefHeight="60"/>
+            </VBox>
             
-            <Label text="SQL编辑器" styleClass="section-header"/>
-            <TextArea fx:id="sqlEditor" 
-                      promptText="在此输入SQL语句..."
-                      styleClass="sql-editor"
-                      prefHeight="150"
-                      wrapText="true"/>
-            
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Button text="执行 (Ctrl+Enter)" onAction="#executeQuery" styleClass="success-button"/>
-                <Button text="清空" onAction="#clearEditor"/>
-            </HBox>
-            
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="执行结果" styleClass="section-header"/>
-                <Label fx:id="resultInfo" text="" styleClass="result-info"/>
-            </HBox>
-            
-            <TableView fx:id="resultTable" VBox.vgrow="ALWAYS" styleClass="result-table">
-            </TableView>
-            
-            <TextArea fx:id="messageArea" 
-                      editable="false" 
-                      styleClass="message-area" 
-                      prefHeight="80"/>
-        </VBox>
+            <VBox spacing="5" prefHeight="150">
+                <padding>
+                    <Insets top="5" left="10" right="10" bottom="5"/>
+                </padding>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="SQL历史记录" styleClass="section-header"/>
+                    <Button text="清空" onAction="#clearSqlHistory" styleClass="danger-button"/>
+                </HBox>
+                <ListView fx:id="sqlHistoryList" onMouseClicked="#onHistoryItemClicked" VBox.vgrow="ALWAYS"/>
+            </VBox>
+        </SplitPane>
     </center>
 
     <bottom>
