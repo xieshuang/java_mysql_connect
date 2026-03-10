@@ -80,14 +80,7 @@
                     <Label fx:id="resultInfo" text="" styleClass="result-info"/>
                 </HBox>
                 
-                <TableView fx:id="resultTable" VBox.vgrow="ALWAYS" styleClass="result-table">
-                    <contextMenu>
-                        <ContextMenu>
-                            <MenuItem text="复制选中行" onAction="#copySelectedRow"/>
-                            <MenuItem text="导出选中行" onAction="#exportSelectedRow"/>
-                        </ContextMenu>
-                    </contextMenu>
-                </TableView>
+                <TableView fx:id="resultTable" VBox.vgrow="ALWAYS" styleClass="result-table"/>
                 
                 <TextArea fx:id="messageArea" 
                           editable="false" 

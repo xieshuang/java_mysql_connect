@@ -57,6 +57,18 @@ public class MainController {
         updateConnectionStatus(false);
         initDatabaseTree();
         initSqlHistory();
+        initResultTableContextMenu();
+    }
+
+    private void initResultTableContextMenu() {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem copyRow = new MenuItem("复制选中行");
+        copyRow.setOnAction(e -> copySelectedRow());
+        MenuItem exportRow = new MenuItem("导出选中行");
+        exportRow.setOnAction(e -> exportSelectedRow());
+        
+        contextMenu.getItems().addAll(copyRow, exportRow);
+        resultTable.setContextMenu(contextMenu);
     }
 
     private void initDatabaseTree() {
