@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.mysqlclient.controller.MainController" 
+            stylesheets="@../style.css"
+            prefWidth="1200" prefHeight="800">
+
+    <top>
+        <VBox spacing="0">
+            <MenuBar>
+                <Menu text="文件">
+                    <MenuItem text="新建连接" onAction="#showConnectionDialog" accelerator="Ctrl+N"/>
+                    <MenuItem text="保存连接" onAction="#saveConnection" accelerator="Ctrl+S"/>
+                    <MenuItem text="导出结果" onAction="#exportResult" accelerator="Ctrl+E"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="退出" onAction="#exitApp" accelerator="Ctrl+Q"/>
+                </Menu>
+                <Menu text="编辑">
+                    <MenuItem text="执行SQL" onAction="#executeQuery" accelerator="Ctrl+Enter"/>
+                    <MenuItem text="格式化SQL" onAction="#formatSql"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="清空结果" onAction="#clearResult"/>
+                </Menu>
+                <Menu text="帮助">
+                    <MenuItem text="关于" onAction="#showAbout"/>
+                </Menu>
+            </MenuBar>
+            
+            <HBox spacing="10" styleClass="toolbar" alignment="CENTER_LEFT">
+                <padding>
+                    <Insets top="10" left="10" right="10" bottom="10"/>
+                </padding>
+                <Button text="连接" onAction="#showConnectionDialog" styleClass="primary-button"/>
+                <Button text="断开" onAction="#disconnect" styleClass="danger-button"/>
+                <Separator orientation="VERTICAL"/>
+                <Button text="执行" onAction="#executeQuery" styleClass="success-button"/>
+                <Button text="清空" onAction="#clearEditor"/>
+                <Separator orientation="VERTICAL"/>
+                <Label text="状态:"/>
+                <Label fx:id="statusLabel" text="未连接" styleClass="status-label"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <left>
+        <VBox styleClass="sidebar" prefWidth="250" spacing="5">
+            <padding>
+                <Insets top="10" left="10" right="10" bottom="10"/>
+            </padding>
+            <Label text="数据库" styleClass="sidebar-header"/>
+            <TreeView fx:id="databaseTree" onMouseClicked="#onTreeItemClicked" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="5">
+            <padding>
+                <Insets top="5" left="10" right="10" bottom="5"/>
+            </padding>
+            
+            <Label text="SQL编辑器" styleClass="section-header"/>
+            <TextArea fx:id="sqlEditor" 
+                      promptText="在此输入SQL语句..."
+                      styleClass="sql-editor"
+                      prefHeight="150"
+                      wrapText="true"/>
+            
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button text="执行 (Ctrl+Enter)" onAction="#executeQuery" styleClass="success-button"/>
+                <Button text="清空" onAction="#clearEditor"/>
+            </HBox>
+            
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="执行结果" styleClass="section-header"/>
+                <Label fx:id="resultInfo" text="" styleClass="result-info"/>
+            </HBox>
+            
+            <TableView fx:id="resultTable" VBox.vgrow="ALWAYS" styleClass="result-table">
+            </TableView>
+            
+            <TextArea fx:id="messageArea" 
+                      editable="false" 
+                      styleClass="message-area" 
+                      prefHeight="80"/>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox styleClass="footer" spacing="20">
+            <Label fx:id="connectionInfoLabel" text="未连接"/>
+            <Separator orientation="VERTICAL"/>
+            <Label fx:id="queryTime" text=""/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

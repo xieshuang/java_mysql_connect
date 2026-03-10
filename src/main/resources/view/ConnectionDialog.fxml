@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.mysqlclient.controller.ConnectionController"
+      spacing="15" prefWidth="450" prefHeight="400"
+      styleClass="dialog">
+
+    <padding>
+        <Insets top="20" left="30" right="30" bottom="20"/>
+    </padding>
+
+    <Label text="数据库连接" styleClass="dialog-title"/>
+
+    <GridPane hgap="10" vgap="10">
+        <Label text="连接名称:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="connectionName" GridPane.columnIndex="1" GridPane.rowIndex="0" 
+                   promptText="可选"/>
+
+        <Label text="Host:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="hostField" text="localhost" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+        <Label text="端口:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="portField" text="3306" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+        <Label text="用户名:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <TextField fx:id="usernameField" text="root" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+        <Label text="密码:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+        <Label text="数据库:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <TextField fx:id="databaseField" GridPane.columnIndex="1" GridPane.rowIndex="5"
+                   promptText="可选"/>
+    </GridPane>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button text="测试连接" onAction="#testConnection" styleClass="primary-button"/>
+        <Label fx:id="testResult" text="" styleClass="test-result"/>
+    </HBox>
+
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="连接" onAction="#connect" styleClass="success-button" defaultButton="true"/>
+        <Button text="取消" onAction="#cancel" cancelButton="true"/>
+    </HBox>
+
+</VBox>
