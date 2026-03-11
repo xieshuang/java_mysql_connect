@@ -46,6 +46,10 @@ public class MainController {
     private TreeView<String> databaseTree;
     @FXML
     private ListView<String> sqlHistoryList;
+    @FXML
+    private Label tableInfoTitle;
+    @FXML
+    private TextArea tableInfoArea;
 
     private DatabaseManager databaseManager;
     private QueryExecutor queryExecutor;
@@ -269,6 +273,38 @@ public class MainController {
         alert.showAndWait();
     }
 
+    private void showCreateTableStatement(String database, String table) {
+        if (!databaseManager.isConnected()) {
+            return;
+        }
+
+        Task<String> task = new Task<String>() {
+            @Override
+            protected String call() throws Exception {
+                return databaseManager.getCreateTableStatement(database, table);
+            }
+
+            @Override
+            protected void succeeded() {
+                String createSQL = getValue();
+                if (createSQL != null) {
+                    tableInfoTitle.setText(database + "." + table);
+                    tableInfoArea.setText(createSQL);
+                } else {
+                    tableInfoTitle.setText("获取失败");
+                    tableInfoArea.setText("无法获取建表语句");
+                }
+            }
+
+            @Override
+            protected void failed() {
+                tableInfoTitle.setText("获取失败");
+                tableInfoArea.setText("错误: " + getException().getMessage());
+            }
+        };
+        new Thread(task).start();
+    }
+
     @FXML
     public void disconnect() {
         if (databaseManager.isConnected()) {
@@ -424,11 +460,19 @@ public class MainController {
         if (event.getClickCount() == 2) {
             sqlEditor.setText("SELECT * FROM " + dbName + "." + tableName + " LIMIT 100");
             executeQuery();
-        } else if (event.getButton() == javafx.scene.input.MouseButton.SECONDARY) {
+        } else if (event.getClickCount() == 1) {
+            // 单击表节点，显示建表语句
+            showCreateTableStatement(dbName, tableName);
+        }
+
+        if (event.getButton() == javafx.scene.input.MouseButton.SECONDARY) {
             ContextMenu contextMenu = new ContextMenu();
             
             MenuItem viewStructure = new MenuItem("查看表结构");
             viewStructure.setOnAction(e -> showTableStructure(dbName, tableName));
+            
+            MenuItem viewCreateSQL = new MenuItem("查看建表语句");
+            viewCreateSQL.setOnAction(e -> showCreateTableStatement(dbName, tableName));
             
             MenuItem selectAll = new MenuItem("查询全部数据");
             selectAll.setOnAction(e -> {
@@ -442,7 +486,7 @@ public class MainController {
                 executeQuery();
             });
             
-            contextMenu.getItems().addAll(viewStructure, selectAll, selectTop10);
+            contextMenu.getItems().addAll(viewStructure, viewCreateSQL, selectAll, selectTop10);
             contextMenu.show(databaseTree, event.getScreenX(), event.getScreenY());
         }
     }

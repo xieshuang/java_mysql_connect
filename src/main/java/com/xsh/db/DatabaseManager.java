@@ -133,6 +133,20 @@ public class DatabaseManager {
         return columns;
     }
 
+    public String getCreateTableStatement(String database, String tableName) {
+        if (connection == null) return null;
+        String sql = "SHOW CREATE TABLE `" + tableName + "`";
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getString(2);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void disconnect() {
         try {
             if (connection != null && !connection.isClosed()) {
