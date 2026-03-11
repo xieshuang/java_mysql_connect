@@ -74,7 +74,7 @@ public class DatabaseManager {
         List<String> tables = new ArrayList<>();
         if (connection == null) return tables;
 
-        String sql = "SHOW TABLES";
+        String sql = "SHOW TABLES FROM `" + database + "`";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -84,6 +84,30 @@ public class DatabaseManager {
             e.printStackTrace();
         }
         return tables;
+    }
+
+    public boolean useDatabase(String database) {
+        if (connection == null) return false;
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute("USE `" + database + "`");
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public String getCurrentDatabase() {
+        if (connection == null) return null;
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT DATABASE()")) {
+            if (rs.next()) {
+                return rs.getString(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public List<ColumnInfo> getColumns(String tableName) {

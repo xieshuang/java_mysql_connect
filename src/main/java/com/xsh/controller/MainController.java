@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -50,6 +51,7 @@ public class MainController {
     private QueryExecutor queryExecutor;
     private ConnectionInfo currentConnection;
     private List<String> currentColumns;
+    private String currentDatabase;
 
     @FXML
     public void initialize() {
@@ -119,17 +121,35 @@ public class MainController {
     }
 
     public void connect(ConnectionInfo connInfo) {
-        boolean success = databaseManager.connect(connInfo);
-        if (success) {
-            currentConnection = connInfo;
-            queryExecutor = new QueryExecutor(databaseManager.getConnection());
-            updateConnectionStatus(true);
-            connectionInfoLabel.setText(connInfo.toString());
-            showMessage("连接成功: " + connInfo.getJdbcUrl());
-            refreshDatabaseTree();
-        } else {
-            showError("连接失败，请检查连接信息是否正确");
-        }
+        showMessage("正在连接...");
+        
+        Task<Boolean> task = new Task<Boolean>() {
+            @Override
+            protected Boolean call() throws Exception {
+                return databaseManager.connect(connInfo);
+            }
+
+            @Override
+            protected void succeeded() {
+                if (getValue()) {
+                    currentConnection = connInfo;
+                    queryExecutor = new QueryExecutor(databaseManager.getConnection());
+                    updateConnectionStatus(true);
+                    currentDatabase = databaseManager.getCurrentDatabase();
+                    updateConnectionInfoLabel();
+                    showMessage("连接成功: " + connInfo.getJdbcUrl());
+                    refreshDatabaseTreeAsync();
+                } else {
+                    showError("连接失败，请检查连接信息是否正确");
+                }
+            }
+
+            @Override
+            protected void failed() {
+                showError("连接失败: " + getException().getMessage());
+            }
+        };
+        new Thread(task).start();
     }
 
     private void refreshDatabaseTree() {
@@ -143,14 +163,85 @@ public class MainController {
                 continue;
             }
             TreeItem<String> dbItem = new TreeItem<>(db);
-            
-            List<String> tables = databaseManager.getTables(db);
-            for (String table : tables) {
-                TreeItem<String> tableItem = new TreeItem<>(table);
-                dbItem.getChildren().add(tableItem);
-            }
+            // 懒加载：添加一个空的占位子节点，展开时再加载真实表列表
+            dbItem.getChildren().add(new TreeItem<>(""));
+            dbItem.expandedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) {
+                    loadTablesForDatabase(dbItem);
+                }
+            });
             root.getChildren().add(dbItem);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void loadTablesForDatabase(TreeItem<String> dbItem) {
+        String dbName = dbItem.getValue();
+        if (dbItem.getChildren().size() == 1 && "".equals(dbItem.getChildren().get(0).getValue())) {
+            dbItem.getChildren().clear();
+            Task<List<String>> task = new Task<List<String>>() {
+                @Override
+                protected List<String> call() throws Exception {
+                    return databaseManager.getTables(dbName);
+                }
+
+                @Override
+                protected void succeeded() {
+                    dbItem.getChildren().clear();
+                    for (String table : getValue()) {
+                        dbItem.getChildren().add(new TreeItem<>(table));
+                    }
+                }
+
+                @Override
+                protected void failed() {
+                    dbItem.getChildren().clear();
+                    dbItem.getChildren().add(new TreeItem<>("加载失败"));
+                }
+            };
+            new Thread(task).start();
+        }
+    }
+
+    private void refreshDatabaseTreeAsync() {
+        TreeItem<String> root = databaseTree.getRoot();
+        root.getChildren().clear();
+        
+        showMessage("正在加载数据库列表...");
+
+        Task<List<String>> task = new Task<List<String>>() {
+            @Override
+            protected List<String> call() throws Exception {
+                return databaseManager.getDatabases();
+            }
+
+            @Override
+            protected void succeeded() {
+                root.getChildren().clear();
+                List<String> databases = getValue();
+                for (String db : databases) {
+                    if (db.equals("information_schema") || db.equals("mysql") || 
+                        db.equals("performance_schema") || db.equals("sys")) {
+                        continue;
+                    }
+                    TreeItem<String> dbItem = new TreeItem<>(db);
+                    dbItem.getChildren().add(new TreeItem<>(""));
+                    dbItem.expandedProperty().addListener((obs, oldVal, newVal) -> {
+                        if (newVal) {
+                            loadTablesForDatabase(dbItem);
+                        }
+                    });
+                    root.getChildren().add(dbItem);
+                }
+                showMessage("数据库列表加载完成");
+            }
+
+            @Override
+            protected void failed() {
+                showMessage("加载数据库列表失败");
+            }
+        };
+        new Thread(task).start();
     }
 
     private void showTableStructure(String database, String table) {
@@ -184,6 +275,7 @@ public class MainController {
             databaseManager.disconnect();
             queryExecutor = null;
             currentConnection = null;
+            currentDatabase = null;
             updateConnectionStatus(false);
             initDatabaseTree();
             clearResult();
@@ -300,7 +392,29 @@ public class MainController {
     @FXML
     public void onTreeItemClicked(MouseEvent event) {
         TreeItem<String> item = databaseTree.getSelectionModel().getSelectedItem();
-        if (item == null || item.getParent() == null || item.getParent().getParent() == null) {
+        if (item == null) {
+            return;
+        }
+
+        TreeItem<String> root = databaseTree.getRoot();
+
+        if (item.getParent() == root) {
+            // 双击数据库节点，切换为当前数据库
+            if (event.getClickCount() == 2) {
+                String dbName = item.getValue();
+                switchToDatabase(dbName);
+            } else if (event.getButton() == javafx.scene.input.MouseButton.SECONDARY) {
+                // 数据库节点右键菜单
+                ContextMenu contextMenu = new ContextMenu();
+                MenuItem setActive = new MenuItem("设为当前数据库");
+                setActive.setOnAction(e -> switchToDatabase(item.getValue()));
+                contextMenu.getItems().add(setActive);
+                contextMenu.show(databaseTree, event.getScreenX(), event.getScreenY());
+            }
+            return;
+        }
+
+        if (item.getParent() == null || item.getParent().getParent() == null) {
             return;
         }
 
@@ -330,6 +444,50 @@ public class MainController {
             
             contextMenu.getItems().addAll(viewStructure, selectAll, selectTop10);
             contextMenu.show(databaseTree, event.getScreenX(), event.getScreenY());
+        }
+    }
+
+    private void switchToDatabase(String dbName) {
+        if (!databaseManager.isConnected()) {
+            showError("请先连接数据库");
+            return;
+        }
+
+        showMessage("正在切换到数据库: " + dbName + "...");
+        
+        Task<Boolean> task = new Task<Boolean>() {
+            @Override
+            protected Boolean call() throws Exception {
+                return databaseManager.useDatabase(dbName);
+            }
+
+            @Override
+            protected void succeeded() {
+                if (getValue()) {
+                    currentDatabase = dbName;
+                    updateConnectionInfoLabel();
+                    refreshDatabaseTree();
+                    showMessage("已切换到数据库: " + dbName);
+                } else {
+                    showError("切换数据库失败");
+                }
+            }
+
+            @Override
+            protected void failed() {
+                showError("切换数据库失败: " + getException().getMessage());
+            }
+        };
+        new Thread(task).start();
+    }
+
+    private void updateConnectionInfoLabel() {
+        if (currentConnection != null) {
+            String info = currentConnection.getUsername() + "@" + currentConnection.getHost() + ":" + currentConnection.getPort();
+            if (currentDatabase != null) {
+                info += " / " + currentDatabase;
+            }
+            connectionInfoLabel.setText(info);
         }
     }
 
