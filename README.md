@@ -81,7 +81,20 @@ mvn clean compile
 # 运行项目
 mvn javafx:run
 
-# 打包为 JAR
+# 打包为可执行 JAR（含所有依赖）
+mvn clean package -DskipTests
+```
+
+### 打包为绿色版
+
+```bash
+# 生成绿色版（需要 JDK 17）
+mvn clean package -DskipTests
+jpackage --input target --main-jar java_mysql_connect-1.0.0.jar --name MySQLClient --type app-image
+
+# 添加 JavaFX 依赖后运行
+# 详见 MySQLClient/Run.bat
+```
 mvn clean package
 ```
 
