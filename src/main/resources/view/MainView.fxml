@@ -65,28 +65,32 @@
                     </padding>
                     
                     <Label text="SQL编辑器" styleClass="section-header"/>
-                    <TextArea fx:id="sqlEditor" 
-                              promptText="在此输入SQL语句..."
-                              styleClass="sql-editor"
-                              prefHeight="120"
-                              wrapText="true"/>
-                    
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Button text="执行 (Ctrl+Enter)" onAction="#executeQuery" styleClass="success-button"/>
-                        <Button text="清空" onAction="#clearEditor"/>
-                    </HBox>
-                    
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="执行结果" styleClass="section-header"/>
-                        <Label fx:id="resultInfo" text="" styleClass="result-info"/>
-                    </HBox>
-                    
-                    <TableView fx:id="resultTable" VBox.vgrow="ALWAYS" styleClass="result-table"/>
-                    
-                    <TextArea fx:id="messageArea" 
-                              editable="false" 
-                              styleClass="message-area" 
-                              prefHeight="60"/>
+                    <SplitPane orientation="VERTICAL" dividerPositions="0.4">
+                        <TextArea fx:id="sqlEditor" 
+                                  promptText="在此输入SQL语句..."
+                                  styleClass="sql-editor"
+                                  VBox.vgrow="ALWAYS"
+                                  wrapText="true"/>
+                        
+                        <VBox spacing="5">
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Button text="执行 (Ctrl+Enter)" onAction="#executeQuery" styleClass="success-button"/>
+                                <Button text="清空" onAction="#clearEditor"/>
+                            </HBox>
+                            
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label text="执行结果" styleClass="section-header"/>
+                                <Label fx:id="resultInfo" text="" styleClass="result-info"/>
+                            </HBox>
+                            
+                            <TableView fx:id="resultTable" VBox.vgrow="ALWAYS" styleClass="result-table"/>
+                            
+                            <TextArea fx:id="messageArea" 
+                                      editable="false" 
+                                      styleClass="message-area" 
+                                      prefHeight="60"/>
+                        </VBox>
+                    </SplitPane>
                 </VBox>
                 
                 <VBox spacing="5" prefHeight="150">
