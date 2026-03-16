@@ -67,9 +67,7 @@ mvn verify
 
 ---
 
-## 3. 代码风格指南
-
-### 3.1 项目结构
+## 3. 项目结构
 
 ```
 src/main/java/com/xsh/
@@ -80,9 +78,13 @@ src/main/java/com/xsh/
 ├── db/                    # 数据库操作层
 │   ├── DatabaseManager.java
 │   └── QueryExecutor.java
-└── controller/             # 控制器层
-    ├── MainController.java
-    └── ConnectionController.java
+├── controller/            # 控制器层
+│   ├── MainController.java
+│   └── ConnectionController.java
+└── util/                  # 工具类
+    ├── IconGenerator.java
+    ├── CsvExporter.java
+    └── ConnectionHistoryManager.java
 
 src/main/resources/
 ├── view/                  # FXML 界面文件
@@ -91,7 +93,11 @@ src/main/resources/
 └── style.css              # 样式文件
 ```
 
-### 3.2 命名规范
+---
+
+## 4. 代码风格指南
+
+### 4.1 命名规范
 
 | 类型 | 规则 | 示例 |
 |------|------|------|
@@ -102,14 +108,14 @@ src/main/resources/
 | 包名 | lowercase | `com.xsh.model` |
 | FXML ID | camelCase | `sqlEditor`, `resultTable` |
 
-### 3.3 Import 规范
+### 4.2 Import 规范
 
-- **导入顺序**（ideally）：
+- **导入顺序**：
   1. Java 标准库 (`java.*`)
   2. 第三方库 (`javafx.*`, `com.mysql.*`)
   3. 项目内部包 (`com.xsh.*`)
 - **避免使用通配符导入**：`import java.util.*` 不推荐
-- **按字母排序**（Maven/IDE 自动处理）
+- **按字母排序**
 
 ```java
 // 正确示例
@@ -124,33 +130,14 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 ```
 
-### 3.4 代码格式化
+### 4.3 代码格式化
 
 - **缩进**：4 空格（不使用 Tab）
 - **行长度**：建议不超过 120 字符
 - **空行**：类方法之间空一行，逻辑块之间可空行
 - **大括号**：K&R 风格（行尾开，行尾闭）
 
-```java
-// 正确示例
-public class DatabaseManager {
-    
-    public boolean connect(ConnectionInfo connectionInfo) {
-        try {
-            // code here
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-    
-    public void disconnect() {
-        // code here
-    }
-}
-```
-
-### 3.5 类型规范
+### 4.4 类型规范
 
 | 类型 | 使用建议 |
 |------|----------|
@@ -168,11 +155,11 @@ Map<String, String> config = new HashMap<>();
 ArrayList<String> databases = new ArrayList<>();
 ```
 
-### 3.6 错误处理规范
+### 4.5 错误处理规范
 
 - **异常捕获**：优先捕获具体异常，避免 `catch (Exception e)`
 - **资源关闭**：使用 try-with-resources
-- **日志记录**：使用 `System.err` 或日志框架（建议添加 SLF4J）
+- **日志记录**：使用 `System.err` 或日志框架
 - **用户提示**：GUI 异常应显示友好提示，不直接暴露堆栈
 
 ```java
@@ -197,7 +184,7 @@ try (Connection conn = DriverManager.getConnection(url, user, pass);
 }
 ```
 
-### 3.7 FXML 规范
+### 4.6 FXML 规范
 
 - 使用有意义的 fx:id 命名
 - 事件处理方法使用 `@FXML` 注解
@@ -217,7 +204,7 @@ public void executeQuery() {
 }
 ```
 
-### 3.8 JavaFX 特定规范
+### 4.7 JavaFX 特定规范
 
 - **FXML 路径**：`/view/xxx.fxml`（从 resources 根目录开始）
 - **Controller 注解**：所有 `@FXML` 注入的字段和方法必须是 `public` 或 `protected`
@@ -235,7 +222,7 @@ public void initialize() {
 
 ---
 
-## 4. 提交规范
+## 5. 提交规范
 
 ### Git 提交信息格式
 
@@ -274,7 +261,7 @@ git commit -m "fix bug"
 
 ---
 
-## 5. 常用快捷操作
+## 6. 常用快捷操作
 
 ### 在 IDE 中运行
 
@@ -297,7 +284,7 @@ git commit -m "fix bug"
 
 ---
 
-## 6. 注意事项
+## 7. 注意事项
 
 1. **JavaFX 模块**：运行需要 JavaFX 模块路径配置
 2. **数据库连接**：确保 MySQL 服务正常运行
@@ -306,4 +293,4 @@ git commit -m "fix bug"
 
 ---
 
-> 本文件由 AI 生成，最后更新：2026-03-10
+> 本文件由 AI 生成
